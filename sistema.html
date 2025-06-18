@@ -1,0 +1,850 @@
+11111111111111111<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sistema de Vendas de Produtos</title>
+<!-- Google Material Icons CDN -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<style>
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: #ffffff;
+    color: #374151;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* Scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f9fafb;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+    border-radius: 4px;
+  }
+  
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px 48px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  header {
+    background: #ffffffcc;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: saturate(180%) blur(10px);
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    color: #111827;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  nav button,
+  nav a {
+    font-weight: 600;
+    font-size: 16px;
+    color: #374151;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover,
+  nav a:hover,
+  nav button:focus,
+  nav a:focus {
+    background-color: #e0e7ff;
+    outline: none;
+  }
+  
+  /* Mobile menu toggle */
+  .mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #374151;
+    font-size: 28px;
+  }
+  
+  /* Sidebar menu for Mobile & Tablet - offcanvas vertical menu */
+  .mobile-nav {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 64px);
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    padding: 32px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 150;
+    overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.08);
+  }
+  .mobile-nav.show {
+    display: flex;
+  }
+  .mobile-nav button,
+  .mobile-nav a {
+    font-weight: 600;
+    font-size: 18px;
+    color: #374151;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  .mobile-nav button:hover,
+  .mobile-nav a:hover,
+  .mobile-nav button:focus,
+  .mobile-nav a:focus {
+    background-color: #d1d5db;
+    outline: none;
+  }
+  
+  /* Main */
+  main {
+    flex: 1;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+  
+  /* Section titles */
+  h1, h2 {
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.15;
+  }
+  h1 {
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+  h2 {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: 12px;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .tab.active {
+    background-color: #4338ca;
+    color: #ede9fe;
+  }
+  
+  /* Forms */
+  form {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+    padding: 32px;
+    max-width: 650px;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
+  }
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 12px;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+  }
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    border-color: #4338ca;
+    outline: none;
+  }
+  button[type="submit"], .btn-primary {
+    background-color: #4338ca;
+    color: #ede9fe;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  button[type="submit"]:hover,
+  .btn-primary:hover {
+    background-color: #6366f1;
+  }
+  button[type="submit"]:focus,
+  .btn-primary:focus {
+    outline: 3px solid #a5b4fc;
+  }
+  
+  /* Tables */
+  table {
+    border-collapse: separate;
+    border-spacing: 0 12px;
+    width: 100%;
+    max-width: 100%;
+  }
+  th, td {
+    text-align: left;
+    padding: 16px 24px;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  thead th {
+    color: #4b5563;
+    font-weight: 700;
+  }
+  tbody tr {
+    background: #f3f4f6;
+    border-radius: 20px;
+  }
+  tbody tr td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+  }
+  tbody tr td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  tbody tr:hover {
+    background: #e0e7ff;
+  }
+  
+  /* Action buttons inside table */
+  .btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 20px;
+    padding: 4px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  .btn-icon:hover, .btn-icon:focus {
+    background-color: #dbeafe;
+    color: #4338ca;
+    outline: none;
+  }
+  
+  /* Responsive grid and sections for main content */
+  .flex-row {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .flex-column {
+    flex: 1 1 400px;
+  }
+  
+  /* Notification banner */
+  #notification {
+    position: fixed;
+    top: 76px;
+    right: 24px;
+    min-width: 240px;
+    background-color: #34d399;
+    color: #065f46;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(52, 211, 153, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 200;
+  }
+  #notification.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  
+  /* Responsive behavior */
+  @media (max-width: 767px) {
+    .tabs {
+      justify-content: center;
+    }
+    main {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      padding: 0 12px;
+    }
+    .flex-row {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .mobile-menu-button {
+      display: block;
+    }
+    nav {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .flex-row {
+      flex-direction: row;
+      gap: 32px;
+    }
+    nav {
+      display: flex;
+    }
+    .mobile-menu-button {
+      display: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .tabs {
+      justify-content: flex-start;
+    }
+    nav {
+      display: flex;
+    }
+    .mobile-menu-button {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo" aria-label="Logotipo do sistema de vendas">Venda Fácil</a>
+    <nav aria-label="Menu principal">
+      <button class="tab active" data-tab="products" aria-selected="true" role="tab" tabindex="0">Produtos</button>
+      <button class="tab" data-tab="sales" aria-selected="false" role="tab" tabindex="-1">Vendas</button>
+      <button class="tab" data-tab="history" aria-selected="false" role="tab" tabindex="-1">Histórico</button>
+      <button class="btn-primary" id="exportDataBtn" title="Exportar dados">Exportar Dados <span class="material-icons" aria-hidden="true">download</span></button>
+    </nav>
+    <button class="mobile-menu-button" aria-label="Abrir menu móvel" aria-expanded="false" aria-controls="mobileNav" title="Abrir menu móvel">
+      <span class="material-icons" aria-hidden="true">menu</span>
+    </button>
+  </div>
+  <nav id="mobileNav" class="mobile-nav" aria-label="Menu móvel">
+    <button class="tab active" data-tab="products" aria-selected="true" role="tab" tabindex="0">Produtos</button>
+    <button class="tab" data-tab="sales" aria-selected="false" role="tab" tabindex="-1">Vendas</button>
+    <button class="tab" data-tab="history" aria-selected="false" role="tab" tabindex="-1">Histórico</button>
+    <button class="btn-primary" id="exportDataBtnMobile" title="Exportar dados">Exportar Dados <span class="material-icons" aria-hidden="true">download</span></button>
+  </nav>
+</header>
+<div id="notification" role="alert" aria-live="assertive"></div>
+
+<main class="container" tabindex="-1">
+  <!-- Products Tab -->
+  <section id="tab-products" role="tabpanel" aria-labelledby="tab-products-tab">
+    <h1>Gerenciar Produtos</h1>
+    <div class="flex-row">
+      <div class="flex-column">
+        <form id="productForm" aria-describedby="productFormDesc" novalidate>
+          <h2 id="productFormDesc">Formulário para adicionar ou editar produtos</h2>
+          <input type="hidden" id="productId" />
+          <label for="productName">Nome do Produto</label>
+          <input type="text" id="productName" name="productName" placeholder="Nome do produto" required autocomplete="off" />
+          <label for="productPrice">Preço (R$)</label>
+          <input type="number" id="productPrice" name="productPrice" min="0" step="0.01" placeholder="0.00" required />
+          <label for="productStock">Estoque</label>
+          <input type="number" id="productStock" name="productStock" min="0" step="1" placeholder="0" required />
+          <button type="submit" id="saveProductBtn" aria-label="Salvar produto">Salvar Produto <span class="material-icons" aria-hidden="true">save</span></button>
+        </form>
+      </div>
+      <div class="flex-column" style="overflow-x:auto;">
+        <h2>Lista de Produtos</h2>
+        <table aria-describedby="productListDesc">
+          <caption id="productListDesc" class="sr-only">Tabela com todos os produtos cadastrados</caption>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Preço (R$)</th>
+              <th>Estoque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="productList">
+            <!-- Dynamic -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sales Tab -->
+  <section id="tab-sales" role="tabpanel" aria-labelledby="tab-sales-tab" hidden>
+    <h1>Registrar Venda</h1>
+    <form id="saleForm" aria-describedby="saleFormDesc" novalidate style="max-width: 450px;">
+      <h2 id="saleFormDesc">Formulário para registrar uma venda de produto</h2>
+      <label for="saleProduct">Produto</label>
+      <select id="saleProduct" name="saleProduct" required aria-required="true" aria-describedby="saleProductDesc">
+        <option value="">-- Selecione um produto --</option>
+      </select>
+      <label for="saleQuantity">Quantidade</label>
+      <input type="number" id="saleQuantity" name="saleQuantity" min="1" step="1" placeholder="1" required />
+      <button type="submit" aria-label="Registrar venda">Registrar Venda <span class="material-icons" aria-hidden="true">point_of_sale</span></button>
+    </form>
+  </section>
+
+  <!-- History Tab -->
+  <section id="tab-history" role="tabpanel" aria-labelledby="tab-history-tab" hidden>
+    <h1>Histórico de Vendas</h1>
+    <div style="overflow-x:auto;">
+      <table aria-describedby="salesHistoryDesc">
+        <caption id="salesHistoryDesc" class="sr-only">Tabela com histórico de vendas</caption>
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Preço Unitário (R$)</th>
+            <th>Valor Total (R$)</th>
+          </tr>
+        </thead>
+        <tbody id="salesHistoryList">
+          <!-- Dynamic -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+  (() => {
+    // Utility: Show notification
+    const notification = document.getElementById('notification');
+    function showNotification(message, duration = 3000) {
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, duration);
+    }
+
+    // Local Storage keys
+    const LS_PRODUCTS_KEY = 'vendaFacil_products';
+    const LS_SALES_KEY = 'vendaFacil_sales';
+
+    // DOM Elements
+    const tabs = document.querySelectorAll('.tab');
+    const tabPanels = {
+      products: document.getElementById('tab-products'),
+      sales: document.getElementById('tab-sales'),
+      history: document.getElementById('tab-history'),
+    };
+
+    // Toggle mobile nav
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const mobileNav = document.getElementById('mobileNav');
+    mobileMenuButton.onclick = () => {
+      const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+      mobileMenuButton.setAttribute('aria-expanded', String(!expanded));
+      mobileNav.classList.toggle('show');
+    };
+
+    // Tab navigation
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        setActiveTab(tab.dataset.tab);
+        if (mobileNav.classList.contains('show')) {
+          mobileNav.classList.remove('show');
+          mobileMenuButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    function setActiveTab(tabName) {
+      tabs.forEach(tab => {
+        const active = tab.dataset.tab === tabName;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.setAttribute('tabindex', active ? '0' : '-1');
+      });
+      Object.keys(tabPanels).forEach(key => {
+        const isVisible = key === tabName;
+        tabPanels[key].hidden = !isVisible;
+      });
+      // Focus main content on tab change for a11y
+      tabPanels[tabName].focus();
+    }
+
+    // Product Management state
+    let products = [];
+    let sales = [];
+
+    // Load data from localStorage
+    function loadData() {
+      const prodsJson = localStorage.getItem(LS_PRODUCTS_KEY);
+      const salesJson = localStorage.getItem(LS_SALES_KEY);
+      products = prodsJson ? JSON.parse(prodsJson) : [];
+      sales = salesJson ? JSON.parse(salesJson) : [];
+    }
+
+    // Save data to localStorage
+    function saveData() {
+      localStorage.setItem(LS_PRODUCTS_KEY, JSON.stringify(products));
+      localStorage.setItem(LS_SALES_KEY, JSON.stringify(sales));
+    }
+
+    // Render products table
+    const productListEl = document.getElementById('productList');
+    function renderProductList() {
+      if (!productListEl) return;
+      productListEl.innerHTML = '';
+      if (products.length === 0) {
+        productListEl.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      products.forEach(product => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(product.name)}</td>
+          <td>R$ ${product.price.toFixed(2)}</td>
+          <td>${product.stock}</td>
+          <td>
+            <button class="btn-icon edit-product" title="Editar produto" data-id="${product.id}" aria-label="Editar produto ${escapeHtml(product.name)}">
+              <span class="material-icons">edit</span>
+            </button>
+            <button class="btn-icon delete-product" title="Excluir produto" data-id="${product.id}" aria-label="Excluir produto ${escapeHtml(product.name)}">
+              <span class="material-icons">delete</span>
+            </button>
+          </td>
+        `;
+        productListEl.appendChild(tr);
+      });
+      // Attach event listeners for edit and delete
+      document.querySelectorAll('.edit-product').forEach(btn => {
+        btn.onclick = e => {
+          const id = btn.getAttribute('data-id');
+          editProduct(id);
+        };
+      });
+      document.querySelectorAll('.delete-product').forEach(btn => {
+        btn.onclick = e => {
+          const id = btn.getAttribute('data-id');
+          deleteProduct(id);
+        };
+      });
+    }
+
+    // Escape HTML for security
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[m];
+      });
+    }
+
+    // Product form elements
+    const productForm = document.getElementById('productForm');
+    const productIdInput = document.getElementById('productId');
+    const productNameInput = document.getElementById('productName');
+    const productPriceInput = document.getElementById('productPrice');
+    const productStockInput = document.getElementById('productStock');
+    const saveProductBtn = document.getElementById('saveProductBtn');
+
+    // Reset product form
+    function resetProductForm() {
+      productIdInput.value = '';
+      productNameInput.value = '';
+      productPriceInput.value = '';
+      productStockInput.value = '';
+      saveProductBtn.textContent = 'Salvar Produto ';
+      const icon = document.createElement('span');
+      icon.className = 'material-icons';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = 'save';
+      saveProductBtn.appendChild(icon);
+    }
+
+    // Edit product by id
+    function editProduct(id) {
+      const prod = products.find(p => p.id === id);
+      if (!prod) return;
+      productIdInput.value = prod.id;
+      productNameInput.value = prod.name;
+      productPriceInput.value = prod.price.toFixed(2);
+      productStockInput.value = prod.stock;
+      saveProductBtn.textContent = 'Atualizar Produto ';
+      const icon = document.createElement('span');
+      icon.className = 'material-icons';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = 'edit';
+      saveProductBtn.appendChild(icon);
+      scrollTo(productForm);
+      productNameInput.focus();
+    }
+
+    // Delete product by id
+    function deleteProduct(id) {
+      if (!confirm('Tem certeza que deseja excluir este produto? Essa ação não pode ser desfeita.')) return;
+      products = products.filter(p => p.id !== id);
+      saveData();
+      renderProductList();
+      refreshSalesProductOptions();
+      showNotification('Produto excluído com sucesso.');
+    }
+
+    // Handle product form submission (add or update)
+    productForm.addEventListener('submit', e => {
+      e.preventDefault();
+      // Validation
+      const name = productNameInput.value.trim();
+      const price = parseFloat(productPriceInput.value);
+      const stock = parseInt(productStockInput.value, 10);
+      if (!name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+      }
+      const id = productIdInput.value;
+      if (id) {
+        // Edit existing
+        const prodIndex = products.findIndex(p => p.id === id);
+        if (prodIndex >= 0) {
+          products[prodIndex].name = name;
+          products[prodIndex].price = price;
+          products[prodIndex].stock = stock;
+          showNotification('Produto atualizado com sucesso.');
+        }
+      } else {
+        // Add new
+        const newProd = {
+          id: generateId(),
+          name,
+          price,
+          stock
+        };
+        products.push(newProd);
+        showNotification('Produto adicionado com sucesso.');
+      }
+      saveData();
+      resetProductForm();
+      renderProductList();
+      refreshSalesProductOptions();
+    });
+
+    // Helper: generate random id for products/sales
+    function generateId() {
+      return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    }
+
+    // Scroll to el smoothly
+    function scrollTo(el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Sales management
+    const saleForm = document.getElementById('saleForm');
+    const saleProductSelect = document.getElementById('saleProduct');
+    const saleQuantityInput = document.getElementById('saleQuantity');
+    const salesHistoryList = document.getElementById('salesHistoryList');
+
+    // Refresh options for sales product select dropdown
+    function refreshSalesProductOptions() {
+      const prevValue = saleProductSelect.value;
+      saleProductSelect.innerHTML = '<option value="">-- Selecione um produto --</option>';
+      products.forEach(product => {
+        // Only show products with stock > 0 for sales
+        if (product.stock > 0) {
+          const option = document.createElement('option');
+          option.value = product.id;
+          option.textContent = `${product.name} (R$ ${product.price.toFixed(2)}, Estoque: ${product.stock})`;
+          saleProductSelect.appendChild(option);
+        }
+      });
+      saleProductSelect.value = prevValue;
+    }
+
+    // Record a new sale
+    saleForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const productId = saleProductSelect.value;
+      const quantity = parseInt(saleQuantityInput.value, 10);
+      if (!productId) {
+        alert('Selecione um produto.');
+        return;
+      }
+      if (isNaN(quantity) || quantity < 1) {
+        alert('Informe uma quantidade válida.');
+        return;
+      }
+      const product = products.find(p => p.id === productId);
+      if (!product) {
+        alert('Produto inválido.');
+        return;
+      }
+      if (product.stock < quantity) {
+        alert(`Estoque insuficiente. Estoque atual: ${product.stock}`);
+        return;
+      }
+      // Reduce product stock
+      product.stock -= quantity;
+
+      // Create sale record
+      const saleRecord = {
+        id: generateId(),
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+        total: product.price * quantity,
+        date: new Date().toISOString()
+      };
+      sales.push(saleRecord);
+      saveData();
+      renderProductList();
+      renderSalesHistory();
+      refreshSalesProductOptions();
+      saleForm.reset();
+      saleProductSelect.focus();
+      showNotification('Venda registrada com sucesso.');
+    });
+
+    // Render sales history table
+    function renderSalesHistory() {
+      if (!salesHistoryList) return;
+      salesHistoryList.innerHTML = '';
+      if (sales.length === 0) {
+        salesHistoryList.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#9ca3af;">Nenhuma venda registrada.</td></tr>';
+        return;
+      }
+      sales.slice().reverse().forEach(sale => {
+        const tr = document.createElement('tr');
+        const dateObj = new Date(sale.date);
+        tr.innerHTML = `
+          <td>${dateObj.toLocaleString('pt-BR',{dateStyle:'short', timeStyle:'short'})}</td>
+          <td>${escapeHtml(sale.name)}</td>
+          <td>${sale.quantity}</td>
+          <td>R$ ${sale.price.toFixed(2)}</td>
+          <td>R$ ${sale.total.toFixed(2)}</td>
+        `;
+        salesHistoryList.appendChild(tr);
+      });
+    }
+
+    // Export data to JSON file
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    const exportDataBtnMobile = document.getElementById('exportDataBtnMobile');
+
+    function downloadJSON(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportAllData() {
+      if (products.length === 0 && sales.length === 0) {
+        alert('Nenhum dado para exportar.');
+        return;
+      }
+      downloadJSON('produtos.json', products);
+      downloadJSON('vendas.json', sales);
+      showNotification('Dados exportados como JSON.');
+    }
+
+    exportDataBtn.addEventListener('click', exportAllData);
+    exportDataBtnMobile.addEventListener('click', () => {
+      exportAllData();
+      if (mobileNav.classList.contains('show')) {
+        mobileNav.classList.remove('show');
+        mobileMenuButton.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Initialization
+    function init() {
+      loadData();
+      renderProductList();
+      refreshSalesProductOptions();
+      renderSalesHistory();
+      resetProductForm();
+      setActiveTab('products');
+    }
+    init();
+  })();
+
+</script>
+</body>
+</html>
+
